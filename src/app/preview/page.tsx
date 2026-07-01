@@ -1,11 +1,19 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { store } from '@/lib/store';
 import { GeneratedContent, PrintJob } from '@/lib/types';
 
 export default function PreviewPage() {
+  return (
+    <Suspense fallback={<PreviewPageFallback />}>
+      <PreviewPageContent />
+    </Suspense>
+  );
+}
+
+function PreviewPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
@@ -254,6 +262,21 @@ export default function PreviewPage() {
             {isSending ? '发送中...' : printStatus === 'completed' ? '已打印' : '发送打印'}
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function PreviewPageFallback() {
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-40 bg-card/90 backdrop-blur-md border-b border-border/50">
+        <div className="flex items-center justify-center px-4 h-12">
+          <h1 className="text-sm font-medium text-foreground">内容预览</h1>
+        </div>
+      </header>
+      <div className="flex items-center justify-center py-20">
+        <p className="text-sm text-muted-foreground">加载中...</p>
       </div>
     </div>
   );

@@ -1,11 +1,19 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { Suspense, useState, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { store } from '@/lib/store';
 import { GeneratedContent } from '@/lib/types';
 
 export default function ManualPage() {
+  return (
+    <Suspense fallback={<ManualPageFallback />}>
+      <ManualPageContent />
+    </Suspense>
+  );
+}
+
+function ManualPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialType = searchParams.get('type') || 'text';
@@ -283,6 +291,21 @@ export default function ManualPage() {
             />
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function ManualPageFallback() {
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-40 bg-card/90 backdrop-blur-md border-b border-border/50">
+        <div className="flex items-center justify-center px-4 h-12">
+          <h1 className="text-sm font-medium text-foreground">手动输入</h1>
+        </div>
+      </header>
+      <div className="flex items-center justify-center py-20">
+        <p className="text-sm text-muted-foreground">加载中...</p>
       </div>
     </div>
   );
