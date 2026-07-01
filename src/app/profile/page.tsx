@@ -1,0 +1,621 @@
+'use client';
+
+import { useState, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import BottomNav from '@/components/BottomNav';
+import { store } from '@/lib/store';
+import { PrintJob, TabType } from '@/lib/types';
+
+type ModalType = 'printer' | 'stats' | 'grade' | 'notify' | 'settings' | 'help' | null;
+
+const grades = ['一年级', '二年级', '三年级', '四年级', '五年级', '六年级', '初一', '初二', '初三'];
+
+export default function ProfilePage() {
+  const router = useRouter();
+  const [activeTab] = useState<TabType>('profile');
+  const [activeModal, setActiveModal] = useState<ModalType>(null);
+  const [selectedGrade, setSelectedGrade] = useState(() => store.getSelectedGrade());
+  const [jobs, setJobs] = useState(() => store.getPrintJobs());
+  const [notifyEnabled, setNotifyEnabled] = useState(true);
+
+  useEffect(() => {
+    return store.subscribe(() => {
+      setSelectedGrade(store.getSelectedGrade());
+      setJobs(store.getPrintJobs());
+    });
+  }, []);
+
+  const completedJobs = jobs.filter(job => job.status === 'completed');
+  const monthlyJobs = completedJobs.filter(isThisMonth);
+  const monthlyPrints = monthlyJobs.length;
+  const totalPrints = completedJobs.length;
+  const monthlyPages = monthlyPrints;
+  const totalPages = totalPrints;
+  const typeStats = [
+    { label: '口算题', count: countJobsByType(monthlyJobs, ['math_arithmetic']), color: 'bg-blue-400' },
+    { label: '应用题', count: countJobsByType(monthlyJobs, ['math_word']), color: 'bg-purple-400' },
+    { label: '生字表', count: countJobsByType(monthlyJobs, ['chinese_chars']), color: 'bg-green-400' },
+    { label: '英语单词', count: countJobsByType(monthlyJobs, ['english_words']), color: 'bg-pink-400' },
+    { label: '文档/图片', count: countJobsByType(monthlyJobs, ['document', 'image']), color: 'bg-gray-400' },
+  ];
+  const recentJobs = completedJobs.slice(0, 4);
+
+  const handleTabChange = useCallback((tab: TabType) => {
+    if (tab === 'home') router.push('/');
+    else if (tab === 'knowledge') router.push('/knowledge');
+    else if (tab === 'print') router.push('/print');
+  }, [router]);
+
+  const closeModal = () => setActiveModal(null);
+
+  return (
+    <div className="safe-bottom min-h-screen flex flex-col">
+      {/* Header */}
+      <header className="bg-gradient-to-br from-primary to-blue-600 px-4 pt-8 pb-6">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center">
+            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <h2 className="text-lg font-semibold text-white">AI智能打印助手</h2>
+            <button
+              onClick={() => setActiveModal('grade')}
+              className="inline-flex items-center gap-1 mt-1 px-2.5 py-0.5 rounded-full bg-white/15 text-white/90 text-xs active:bg-white/25 transition-colors"
+            >
+              {selectedGrade}
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Menu */}
+      <main className="px-4 mt-4 flex-1 flex flex-col">
+        <div className="bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden">
+          {/* 打印机管理 */}
+          <MenuRow
+            icon="🖨️"
+            label="打印机管理"
+            desc="已连接: AI智能打印机 Pro"
+            onClick={() => setActiveModal('printer')}
+            hasBorder
+          />
+          {/* 使用统计 */}
+          <MenuRow
+            icon="📊"
+            label="使用统计"
+            desc={`本月已打印 ${monthlyPrints} 份`}
+            onClick={() => setActiveModal('stats')}
+            hasBorder
+          />
+          {/* 打印提醒 */}
+          <MenuRow
+            icon="🔔"
+            label="打印提醒"
+            desc={notifyEnabled ? '已开启' : '已关闭'}
+            onClick={() => setActiveModal('notify')}
+            hasBorder
+          />
+          {/* 设置 */}
+          <MenuRow
+            icon="⚙️"
+            label="设置"
+            desc="语言、主题、关于"
+            onClick={() => setActiveModal('settings')}
+            hasBorder
+          />
+          {/* 帮助与反馈 */}
+          <MenuRow
+            icon="❓"
+            label="帮助与反馈"
+            desc="常见问题、使用指南"
+            onClick={() => setActiveModal('help')}
+          />
+        </div>
+
+        {/* Version */}
+        <p className="text-center text-xs text-muted-foreground mt-auto pb-6">
+          AI智能打印助手 v1.0.0
+        </p>
+      </main>
+
+      <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+
+      {/* Modals */}
+      {activeModal && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center" onClick={closeModal}>
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/40" />
+
+          {/* Modal Content */}
+          <div
+            className="relative w-full max-w-[480px] bg-card rounded-t-2xl animate-slide-up max-h-[70vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Printer Management */}
+            {activeModal === 'printer' && (
+              <ModalContent title="打印机管理" onClose={closeModal}>
+                <div className="space-y-4">
+                  {/* Status Card */}
+                  <div className="bg-green-50 rounded-xl p-4 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                      <div className="w-3 h-3 rounded-full bg-green-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-green-800">已连接</p>
+                      <p className="text-xs text-green-600">AI智能打印机 Pro</p>
+                    </div>
+                  </div>
+
+                  {/* Device Info */}
+                  <div className="space-y-3">
+                    <InfoRow label="设备名称" value="AI智能打印机 Pro" />
+                    <InfoRow label="设备型号" value="AP-2024X" />
+                    <InfoRow label="固件版本" value="v3.2.1" />
+                    <InfoRow label="连接方式" value="Wi-Fi 直连" />
+                    <InfoRow label="IP 地址" value="192.168.1.100" />
+                    <InfoRow label="墨量" value="充足 (85%)" />
+                    <InfoRow label="纸张" value="A4 (剩余约200张)" />
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-3 pt-2">
+                    <button className="flex-1 h-10 rounded-xl border border-border text-sm font-medium text-foreground active:scale-[0.98] transition-transform">
+                      重新搜索
+                    </button>
+                    <button className="flex-1 h-10 rounded-xl bg-destructive/10 text-destructive text-sm font-medium active:scale-[0.98] transition-transform">
+                      断开连接
+                    </button>
+                  </div>
+                </div>
+              </ModalContent>
+            )}
+
+            {/* Statistics */}
+            {activeModal === 'stats' && (
+              <ModalContent title="使用统计" onClose={closeModal}>
+                <div className="space-y-4">
+                  {/* Summary Cards */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <StatCard label="本月打印" value={String(monthlyPrints)} unit="份" color="text-primary" />
+                    <StatCard label="累计打印" value={String(totalPrints)} unit="份" color="text-green-500" />
+                    <StatCard label="本月页数" value={String(monthlyPages)} unit="页" color="text-amber-500" />
+                    <StatCard label="累计页数" value={String(totalPages)} unit="页" color="text-purple-500" />
+                  </div>
+
+                  {/* Type Breakdown */}
+                  <div className="bg-muted/50 rounded-xl p-4">
+                    <p className="text-sm font-medium text-foreground mb-3">本月打印类型分布</p>
+                    <div className="space-y-2.5">
+                      {typeStats.map(stat => (
+                        <TypeBar
+                          key={stat.label}
+                          label={stat.label}
+                          count={stat.count}
+                          total={monthlyPrints}
+                          color={stat.color}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Recent Activity */}
+                  <div className="bg-muted/50 rounded-xl p-4">
+                    <p className="text-sm font-medium text-foreground mb-3">最近打印</p>
+                    <div className="space-y-2">
+                      {recentJobs.length > 0 ? (
+                        recentJobs.map(job => (
+                          <RecentItem
+                            key={job.id}
+                            title={job.title}
+                            time={formatPrintTime(job.completedAt || job.createdAt)}
+                          />
+                        ))
+                      ) : (
+                        <p className="text-xs text-muted-foreground py-1.5">暂无打印记录</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </ModalContent>
+            )}
+
+            {/* Grade Selection */}
+            {activeModal === 'grade' && (
+              <ModalContent title="年级设置" onClose={closeModal}>
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">选择当前年级，AI将生成适合该年级的学习内容</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {grades.map((grade) => (
+                      <button
+                        key={grade}
+                        onClick={() => {
+                          store.setSelectedGrade(grade);
+                          closeModal();
+                        }}
+                        className={`
+                          h-10 rounded-xl text-sm font-medium transition-all active:scale-95
+                          ${selectedGrade === grade
+                            ? 'bg-primary text-white shadow-md shadow-primary/30'
+                            : 'bg-muted text-foreground hover:bg-muted/80'
+                          }
+                        `}
+                      >
+                        {grade}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </ModalContent>
+            )}
+
+            {/* Notification Settings */}
+            {activeModal === 'notify' && (
+              <ModalContent title="打印提醒" onClose={closeModal}>
+                <div className="space-y-4">
+                  <ToggleRow
+                    label="打印完成提醒"
+                    desc="打印完成后发送通知"
+                    enabled={notifyEnabled}
+                    onChange={setNotifyEnabled}
+                  />
+                  <ToggleRow
+                    label="错误提醒"
+                    desc="打印出错时发送通知"
+                    enabled={true}
+                    onChange={() => {}}
+                  />
+                  <ToggleRow
+                    label="缺纸/缺墨提醒"
+                    desc="纸张或墨量不足时提醒"
+                    enabled={true}
+                    onChange={() => {}}
+                  />
+
+                  <div className="pt-2 border-t border-border/50">
+                    <button
+                      onClick={() => {
+                        setNotifyEnabled(!notifyEnabled);
+                        closeModal();
+                      }}
+                      className={`
+                        w-full h-10 rounded-xl text-sm font-medium transition-all active:scale-[0.98]
+                        ${notifyEnabled
+                          ? 'bg-destructive/10 text-destructive'
+                          : 'bg-primary text-white shadow-md shadow-primary/30'
+                        }
+                      `}
+                    >
+                      {notifyEnabled ? '关闭所有提醒' : '开启所有提醒'}
+                    </button>
+                  </div>
+                </div>
+              </ModalContent>
+            )}
+
+            {/* Settings / About */}
+            {activeModal === 'settings' && (
+              <ModalContent title="设置" onClose={closeModal}>
+                <div className="space-y-4">
+                  {/* Language */}
+                  <div className="flex items-center justify-between py-2">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">语言</p>
+                      <p className="text-xs text-muted-foreground">应用界面语言</p>
+                    </div>
+                    <span className="text-sm text-primary font-medium">简体中文</span>
+                  </div>
+
+                  {/* Theme */}
+                  <div className="flex items-center justify-between py-2">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">主题</p>
+                      <p className="text-xs text-muted-foreground">界面显示主题</p>
+                    </div>
+                    <span className="text-sm text-primary font-medium">跟随系统</span>
+                  </div>
+
+                  {/* Font Size */}
+                  <div className="flex items-center justify-between py-2">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">字体大小</p>
+                      <p className="text-xs text-muted-foreground">调整界面字体大小</p>
+                    </div>
+                    <span className="text-sm text-primary font-medium">标准</span>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="border-t border-border/50" />
+
+                  {/* About */}
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-foreground">关于</p>
+                    <div className="bg-muted/50 rounded-xl p-4 space-y-2">
+                      <InfoRow label="应用名称" value="AI智能打印助手" />
+                      <InfoRow label="版本号" value="v1.0.0" />
+                      <InfoRow label="适配设备" value="AI智能打印机 Pro" />
+                    </div>
+                  </div>
+
+                  {/* Clear Cache */}
+                  <button className="w-full h-10 rounded-xl border border-border text-sm font-medium text-foreground active:scale-[0.98] transition-transform">
+                    清除缓存
+                  </button>
+                </div>
+              </ModalContent>
+            )}
+
+            {/* 帮助与反馈 */}
+            {activeModal === 'help' && (
+              <ModalContent title="帮助与反馈" onClose={closeModal}>
+                <div className="space-y-4">
+                  {/* 常见问题 */}
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-3">常见问题</p>
+                    <div className="space-y-3">
+                      <FaqItem
+                        question="语音识别不准确怎么办？"
+                        answer="请确保在安静环境下使用，说话时语速适中、吐字清晰。如果仍然识别不准，可以尝试手动输入内容。"
+                      />
+                      <FaqItem
+                        question="生成的内容可以修改吗？"
+                        answer="可以。生成内容后会自动跳转到预览页面，您可以直接点击内容进行编辑修改，确认无误后再发送打印。"
+                      />
+                      <FaqItem
+                        question="打印机连接失败如何处理？"
+                        answer="1. 确认打印机已开机且处于可发现状态\n2. 检查手机与打印机是否在同一网络\n3. 尝试在打印机管理中重新搜索设备\n4. 重启打印机后重试"
+                      />
+                      <FaqItem
+                        question="支持哪些文档格式？"
+                        answer="目前支持 TXT、PDF、DOCX 格式的文件直接上传打印。图片和拍照也支持直接打印。"
+                      />
+                      <FaqItem
+                        question="打印任务卡住了怎么办？"
+                        answer="可以在打印记录页面查看任务状态，尝试取消后重新发送。如果问题持续，请重启打印机和应用。"
+                      />
+                    </div>
+                  </div>
+
+                  {/* 分隔线 */}
+                  <div className="border-t border-border/50" />
+
+                  {/* 使用技巧 */}
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-3">使用技巧</p>
+                    <div className="bg-blue-50 rounded-xl p-4 space-y-2.5">
+                      <div className="flex items-start gap-2">
+                        <span className="text-blue-500 mt-0.5">💡</span>
+                        <p className="text-xs text-blue-700 leading-relaxed">语音指令支持自然语言，如"帮我出50道10以内加法题"</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-blue-500 mt-0.5">💡</span>
+                        <p className="text-xs text-blue-700 leading-relaxed">可以在顶部切换年级，AI会根据年级自动调整内容难度</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-blue-500 mt-0.5">💡</span>
+                        <p className="text-xs text-blue-700 leading-relaxed">打印记录中可以查看历史任务，支持重新打印</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 分隔线 */}
+                  <div className="border-t border-border/50" />
+
+                  {/* 意见反馈 */}
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-3">意见反馈</p>
+                    <textarea
+                      className="w-full h-24 rounded-xl border border-border/50 bg-muted/30 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+                      placeholder="请描述您遇到的问题或建议..."
+                    />
+                    <button className="w-full h-10 mt-3 rounded-xl bg-primary text-white text-sm font-medium shadow-md shadow-primary/30 active:scale-[0.98] transition-transform">
+                      提交反馈
+                    </button>
+                  </div>
+                </div>
+              </ModalContent>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ---- Sub Components ---- */
+
+function MenuRow({ icon, label, desc, onClick, hasBorder }: {
+  icon: string;
+  label: string;
+  desc: string;
+  onClick: () => void;
+  hasBorder?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`
+        w-full flex items-center gap-3 px-4 py-3.5
+        ${hasBorder ? 'border-b border-border/50' : ''}
+        hover:bg-muted/50 active:bg-muted transition-colors text-left
+      `}
+    >
+      <span className="text-xl w-8 text-center">{icon}</span>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-foreground">{label}</p>
+        <p className="text-xs text-muted-foreground truncate">{desc}</p>
+      </div>
+      <svg className="w-4 h-4 text-muted-foreground/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+  );
+}
+
+function ModalContent({ title, onClose, children }: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="p-4">
+      {/* Handle bar */}
+      <div className="flex justify-center mb-3">
+        <div className="w-10 h-1 rounded-full bg-border" />
+      </div>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-base font-semibold text-foreground">{title}</h3>
+        <button
+          onClick={onClose}
+          className="w-8 h-8 rounded-full bg-muted flex items-center justify-center active:scale-90 transition-transform"
+        >
+          <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      {children}
+      {/* Bottom safe area */}
+      <div className="h-4" />
+    </div>
+  );
+}
+
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between py-1">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="text-xs text-foreground font-medium">{value}</span>
+    </div>
+  );
+}
+
+function StatCard({ label, value, unit, color }: {
+  label: string;
+  value: string;
+  unit: string;
+  color: string;
+}) {
+  return (
+    <div className="bg-muted/50 rounded-xl p-3 text-center">
+      <p className={`text-2xl font-bold ${color}`}>{value}</p>
+      <p className="text-xs text-muted-foreground mt-0.5">{unit}</p>
+      <p className="text-xs text-muted-foreground">{label}</p>
+    </div>
+  );
+}
+
+function TypeBar({ label, count, total, color }: {
+  label: string;
+  count: number;
+  total: number;
+  color: string;
+}) {
+  const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-xs text-muted-foreground w-16 shrink-0">{label}</span>
+      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div className={`h-full ${color} rounded-full`} style={{ width: `${pct}%` }} />
+      </div>
+      <span className="text-xs text-muted-foreground w-8 text-right">{count}份</span>
+    </div>
+  );
+}
+
+function isThisMonth(job: PrintJob): boolean {
+  const date = new Date(job.completedAt || job.createdAt);
+  const now = new Date();
+  return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
+}
+
+function countJobsByType(jobs: PrintJob[], types: Array<PrintJob['type']>): number {
+  return jobs.filter(job => types.includes(job.type)).length;
+}
+
+function formatPrintTime(timestamp: number): string {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const time = date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+
+  if (date.toDateString() === now.toDateString()) {
+    return `今天 ${time}`;
+  }
+
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (date.toDateString() === yesterday.toDateString()) {
+    return `昨天 ${time}`;
+  }
+
+  return date.toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' }) + ` ${time}`;
+}
+
+function RecentItem({ title, time }: { title: string; time: string }) {
+  return (
+    <div className="flex items-center justify-between py-1.5">
+      <span className="text-xs text-foreground truncate flex-1">{title}</span>
+      <span className="text-xs text-muted-foreground ml-2 shrink-0">{time}</span>
+    </div>
+  );
+}
+
+function ToggleRow({ label, desc, enabled, onChange }: {
+  label: string;
+  desc: string;
+  enabled: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between py-2">
+      <div>
+        <p className="text-sm font-medium text-foreground">{label}</p>
+        <p className="text-xs text-muted-foreground">{desc}</p>
+      </div>
+      <button
+        onClick={() => onChange(!enabled)}
+        className={`
+          w-11 h-6 rounded-full transition-colors duration-200 relative
+          ${enabled ? 'bg-primary' : 'bg-gray-300'}
+        `}
+      >
+        <div
+          className={`
+            absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200
+            ${enabled ? 'translate-x-[22px]' : 'translate-x-0.5'}
+          `}
+        />
+      </button>
+    </div>
+  );
+}
+
+function FaqItem({ question, answer }: { question: string; answer: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="bg-muted/50 rounded-xl overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-4 py-3 text-left active:bg-muted transition-colors"
+      >
+        <span className="text-sm font-medium text-foreground pr-2">{question}</span>
+        <svg
+          className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {open && (
+        <div className="px-4 pb-3">
+          <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">{answer}</p>
+        </div>
+      )}
+    </div>
+  );
+}
