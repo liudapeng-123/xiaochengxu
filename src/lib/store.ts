@@ -1,10 +1,25 @@
-import { GeneratedContent, PrintJob, TabType } from './types';
+import { GeneratedContent, PrintJob, TabType, PrinterDevice, PrinterConnectionStatus, PrinterState } from './types';
 
-// Simple in-memory store using module scope
 let _contents: GeneratedContent[] = [];
 let _printJobs: PrintJob[] = [];
 let _activeTab: TabType = 'home';
 let _selectedGrade = '三年级';
+let _printerState: PrinterState = {
+  status: 'connected',
+  device: {
+    id: 'printer-001',
+    name: 'AI智能打印机 Pro',
+    model: 'AP-2024X',
+    firmware: 'v3.2.1',
+    connectionType: 'Wi-Fi 直连',
+    ipAddress: '192.168.1.100',
+    inkLevel: 85,
+    paperRemaining: 200,
+    paperSize: 'A4',
+  },
+  discoveredDevices: [],
+  wifiConfig: null,
+};
 let _listeners: Array<() => void> = [];
 
 function notify() {
@@ -71,6 +86,60 @@ export const store = {
 
   setSelectedGrade(grade: string) {
     _selectedGrade = grade;
+    notify();
+  },
+
+  getPrinterState(): PrinterState {
+    return _printerState;
+  },
+
+  setPrinterStatus(status: PrinterConnectionStatus) {
+    _printerState = { ..._printerState, status };
+    notify();
+  },
+
+  setPrinterDevice(device: PrinterDevice | null) {
+    _printerState = { ..._printerState, device };
+    notify();
+  },
+
+  setDiscoveredDevices(devices: PrinterDevice[]) {
+    _printerState = { ..._printerState, discoveredDevices: devices };
+    notify();
+  },
+
+  connectPrinter(device: PrinterDevice) {
+    _printerState = {
+      ..._printerState,
+      status: 'connected',
+      device,
+      discoveredDevices: [],
+    };
+    notify();
+  },
+
+  disconnectPrinter() {
+    _printerState = {
+      ..._printerState,
+      status: 'disconnected',
+      device: null,
+    };
+    notify();
+  },
+
+  setWifiConfig(ssid: string, password: string) {
+    _printerState = {
+      ..._printerState,
+      wifiConfig: { ssid, password },
+    };
+    notify();
+  },
+
+  clearWifiConfig() {
+    _printerState = {
+      ..._printerState,
+      wifiConfig: null,
+    };
     notify();
   },
 };

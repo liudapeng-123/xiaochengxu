@@ -4,11 +4,44 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import BottomNav from '@/components/BottomNav';
 import { store } from '@/lib/store';
-import { PrintJob, TabType } from '@/lib/types';
+import { PrintJob, TabType, PrinterDevice, PrinterState } from '@/lib/types';
 
-type ModalType = 'printer' | 'stats' | 'grade' | 'notify' | 'settings' | 'help' | null;
+type ModalType = 'printer' | 'stats' | 'grade' | 'notify' | 'settings' | 'help' | 'wifi' | null;
 
 const grades = ['一年级', '二年级', '三年级', '四年级', '五年级', '六年级', '初一', '初二', '初三'];
+
+const MOCK_DISCOVERED: PrinterDevice[] = [
+  {
+    id: 'bt-001',
+    name: 'AI智能打印机 Pro',
+    model: 'AP-2024X',
+    firmware: 'v3.2.1',
+    connectionType: '蓝牙',
+    inkLevel: 85,
+    paperRemaining: 200,
+    paperSize: 'A4',
+  },
+  {
+    id: 'bt-002',
+    name: 'HP LaserJet Mini',
+    model: 'LJ-M200',
+    firmware: 'v2.1.0',
+    connectionType: '蓝牙',
+    inkLevel: 60,
+    paperRemaining: 150,
+    paperSize: 'A4',
+  },
+  {
+    id: 'bt-003',
+    name: 'Canon PIXMA TS',
+    model: 'TS-3380',
+    firmware: 'v1.8.3',
+    connectionType: '蓝牙',
+    inkLevel: 40,
+    paperRemaining: 80,
+    paperSize: 'A4',
+  },
+];
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -16,12 +49,19 @@ export default function ProfilePage() {
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const [selectedGrade, setSelectedGrade] = useState(() => store.getSelectedGrade());
   const [jobs, setJobs] = useState(() => store.getPrintJobs());
+  const [printerState, setPrinterState] = useState<PrinterState>(() => store.getPrinterState());
   const [notifyEnabled, setNotifyEnabled] = useState(true);
+  const [selectedDevice, setSelectedDevice] = useState<PrinterDevice | null>(null);
+  const [wifiSsid, setWifiSsid] = useState('');
+  const [wifiPassword, setWifiPassword] = useState('');
+  const [wifiConnecting, setWifiConnecting] = useState(false);
+  const [wifiSuccess, setWifiSuccess] = useState(false);
 
   useEffect(() => {
     return store.subscribe(() => {
       setSelectedGrade(store.getSelectedGrade());
       setJobs(store.getPrintJobs());
+      setPrinterState(store.getPrinterState());
     });
   }, []);
 
@@ -47,6 +87,35 @@ export default function ProfilePage() {
   }, [router]);
 
   const closeModal = () => setActiveModal(null);
+
+  const handleDisconnect = useCallback(() => {
+    store.disconnectPrinter();
+  }, []);
+
+  const handleReSearch = useCallback(() => {
+    store.setPrinterStatus('scanning');
+    store.setDiscoveredDevices([]);
+    setTimeout(() => {
+      store.setDiscoveredDevices(MOCK_DISCOVERED);
+      store.setPrinterStatus('disconnected');
+    }, 2000);
+  }, []);
+
+  const handleWifiConnect = useCallback(() => {
+    if (!selectedDevice || !wifiSsid.trim() || !wifiPassword.trim()) return;
+    setWifiConnecting(true);
+    store.setWifiConfig(wifiSsid, wifiPassword);
+    setTimeout(() => {
+      store.connectPrinter({
+        ...selectedDevice,
+        connectionType: 'Wi-Fi',
+        ipAddress: '192.168.1.' + Math.floor(Math.random() * 200 + 50),
+      });
+      store.clearWifiConfig();
+      setWifiConnecting(false);
+      setWifiSuccess(true);
+    }, 2500);
+  }, [selectedDevice, wifiSsid, wifiPassword]);
 
   return (
     <div className="safe-bottom min-h-screen flex flex-col">
@@ -80,7 +149,7 @@ export default function ProfilePage() {
           <MenuRow
             icon="🖨️"
             label="打印机管理"
-            desc="已连接: AI智能打印机 Pro"
+            desc={printerState.device ? `已连接: ${printerState.device.name}` : '未连接打印机'}
             onClick={() => setActiveModal('printer')}
             hasBorder
           />
@@ -140,37 +209,219 @@ export default function ProfilePage() {
             {activeModal === 'printer' && (
               <ModalContent title="打印机管理" onClose={closeModal}>
                 <div className="space-y-4">
-                  {/* Status Card */}
-                  <div className="bg-green-50 rounded-xl p-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                      <div className="w-3 h-3 rounded-full bg-green-500" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-green-800">已连接</p>
-                      <p className="text-xs text-green-600">AI智能打印机 Pro</p>
-                    </div>
-                  </div>
+                  {printerState.status === 'connected' && printerState.device ? (
+                    <>
+                      {/* Connected Status Card */}
+                      <div className="bg-green-50 rounded-xl p-4 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                          <div className="w-3 h-3 rounded-full bg-green-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-green-800">已连接</p>
+                          <p className="text-xs text-green-600">{printerState.device.name}</p>
+                        </div>
+                      </div>
 
-                  {/* Device Info */}
-                  <div className="space-y-3">
-                    <InfoRow label="设备名称" value="AI智能打印机 Pro" />
-                    <InfoRow label="设备型号" value="AP-2024X" />
-                    <InfoRow label="固件版本" value="v3.2.1" />
-                    <InfoRow label="连接方式" value="Wi-Fi 直连" />
-                    <InfoRow label="IP 地址" value="192.168.1.100" />
-                    <InfoRow label="墨量" value="充足 (85%)" />
-                    <InfoRow label="纸张" value="A4 (剩余约200张)" />
-                  </div>
+                      {/* Device Info */}
+                      <div className="space-y-3">
+                        <InfoRow label="设备名称" value={printerState.device.name} />
+                        <InfoRow label="设备型号" value={printerState.device.model} />
+                        <InfoRow label="固件版本" value={printerState.device.firmware} />
+                        <InfoRow label="连接方式" value={printerState.device.connectionType} />
+                        {printerState.device.ipAddress && (
+                          <InfoRow label="IP 地址" value={printerState.device.ipAddress} />
+                        )}
+                        <InfoRow label="墨量" value={`${printerState.device.inkLevel >= 60 ? '充足' : printerState.device.inkLevel >= 20 ? '一般' : '不足'} (${printerState.device.inkLevel}%)`} />
+                        <InfoRow label="纸张" value={`${printerState.device.paperSize} (剩余约${printerState.device.paperRemaining}张)`} />
+                      </div>
+                    </>
+                  ) : printerState.status === 'scanning' ? (
+                    <>
+                      {/* Scanning State */}
+                      <div className="bg-blue-50 rounded-xl p-4 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                          <svg className="w-5 h-5 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-blue-800">正在搜索设备...</p>
+                          <p className="text-xs text-blue-600">通过蓝牙扫描附近的打印机</p>
+                        </div>
+                      </div>
+
+                      {printerState.discoveredDevices.length > 0 && (
+                        <div className="space-y-2">
+                          <p className="text-xs text-muted-foreground font-medium">发现的设备：</p>
+                          {printerState.discoveredDevices.map((device) => (
+                            <button
+                              key={device.id}
+                              onClick={() => {
+                                setSelectedDevice(device);
+                                setActiveModal('wifi');
+                              }}
+                              className="w-full flex items-center gap-3 p-3 rounded-xl border border-border/50 bg-card hover:bg-muted/50 active:bg-muted transition-colors text-left"
+                            >
+                              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.858 15.355-5.858 21.213 0" />
+                                </svg>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-foreground">{device.name}</p>
+                                <p className="text-xs text-muted-foreground">{device.model} · {device.connectionType}</p>
+                              </div>
+                              <svg className="w-4 h-4 text-muted-foreground/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                              </svg>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {/* Disconnected State */}
+                      <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                          <div className="w-3 h-3 rounded-full bg-gray-400" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-600">未连接</p>
+                          <p className="text-xs text-gray-400">点击重新搜索查找打印机</p>
+                        </div>
+                      </div>
+                    </>
+                  )}
 
                   {/* Actions */}
                   <div className="flex gap-3 pt-2">
-                    <button className="flex-1 h-10 rounded-xl border border-border text-sm font-medium text-foreground active:scale-[0.98] transition-transform">
-                      重新搜索
+                    <button
+                      onClick={handleReSearch}
+                      disabled={printerState.status === 'scanning'}
+                      className={`
+                        flex-1 h-10 rounded-xl border border-border text-sm font-medium transition-all active:scale-[0.98]
+                        ${printerState.status === 'scanning'
+                          ? 'text-muted-foreground cursor-not-allowed opacity-50'
+                          : 'text-foreground hover:bg-muted'
+                        }
+                      `}
+                    >
+                      {printerState.status === 'scanning' ? '搜索中...' : '重新搜索'}
                     </button>
-                    <button className="flex-1 h-10 rounded-xl bg-destructive/10 text-destructive text-sm font-medium active:scale-[0.98] transition-transform">
-                      断开连接
-                    </button>
+                    {printerState.status === 'connected' && (
+                      <button
+                        onClick={handleDisconnect}
+                        className="flex-1 h-10 rounded-xl bg-destructive/10 text-destructive text-sm font-medium active:scale-[0.98] transition-transform"
+                      >
+                        断开连接
+                      </button>
+                    )}
                   </div>
+                </div>
+              </ModalContent>
+            )}
+
+            {/* WiFi Configuration Modal */}
+            {activeModal === 'wifi' && selectedDevice && (
+              <ModalContent title="蓝牙配网" onClose={() => { setActiveModal('printer'); setSelectedDevice(null); setWifiSuccess(false); }}>
+                <div className="space-y-4">
+                  {/* Selected Device */}
+                  <div className="bg-primary/5 rounded-xl p-4 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.858 15.355-5.858 21.213 0" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{selectedDevice.name}</p>
+                      <p className="text-xs text-muted-foreground">{selectedDevice.model} · 蓝牙已配对</p>
+                    </div>
+                  </div>
+
+                  {!wifiSuccess ? (
+                    <>
+                      <p className="text-xs text-muted-foreground">请输入WiFi信息，将通过蓝牙发送给打印机进行联网配置</p>
+
+                      {/* WiFi SSID Input */}
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-foreground">WiFi 名称 (SSID)</label>
+                        <input
+                          type="text"
+                          value={wifiSsid}
+                          onChange={(e) => setWifiSsid(e.target.value)}
+                          placeholder="请输入WiFi名称"
+                          className="w-full h-10 rounded-xl border border-border bg-muted/30 px-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        />
+                      </div>
+
+                      {/* WiFi Password Input */}
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-foreground">WiFi 密码</label>
+                        <input
+                          type="password"
+                          value={wifiPassword}
+                          onChange={(e) => setWifiPassword(e.target.value)}
+                          placeholder="请输入WiFi密码"
+                          className="w-full h-10 rounded-xl border border-border bg-muted/30 px-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        />
+                      </div>
+
+                      {/* Connect Button */}
+                      <button
+                        onClick={handleWifiConnect}
+                        disabled={!wifiSsid.trim() || !wifiPassword.trim() || wifiConnecting}
+                        className={`
+                          w-full h-11 rounded-xl text-sm font-medium transition-all active:scale-[0.98]
+                          ${!wifiSsid.trim() || !wifiPassword.trim() || wifiConnecting
+                            ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                            : 'bg-primary text-white shadow-md shadow-primary/30'
+                          }
+                        `}
+                      >
+                        {wifiConnecting ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                            配网中...
+                          </span>
+                        ) : (
+                          '发送WiFi配置'
+                        )}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      {/* Success State */}
+                      <div className="bg-green-50 rounded-xl p-6 flex flex-col items-center gap-3">
+                        <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
+                          <svg className="w-7 h-7 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm font-medium text-green-800">配网成功</p>
+                          <p className="text-xs text-green-600 mt-1">打印机已连接到 WiFi: {wifiSsid}</p>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          setActiveModal('printer');
+                          setSelectedDevice(null);
+                          setWifiSuccess(false);
+                          setWifiSsid('');
+                          setWifiPassword('');
+                        }}
+                        className="w-full h-11 rounded-xl bg-primary text-white text-sm font-medium shadow-md shadow-primary/30 active:scale-[0.98] transition-transform"
+                      >
+                        完成
+                      </button>
+                    </>
+                  )}
                 </div>
               </ModalContent>
             )}

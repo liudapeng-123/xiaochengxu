@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import VoiceButton from '@/components/VoiceButton';
 import QuickActions from '@/components/QuickActions';
 import BottomNav from '@/components/BottomNav';
 import { store } from '@/lib/store';
-import { GeneratedContent, QuickAction, TabType } from '@/lib/types';
+import { GeneratedContent, QuickAction, TabType, PrinterState } from '@/lib/types';
 
 type ParsedCommand = {
   type: GeneratedContent['type'];
@@ -18,6 +18,13 @@ export default function HomePage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [recentContent, setRecentContent] = useState<GeneratedContent | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('home');
+  const [printerState, setPrinterState] = useState<PrinterState>(() => store.getPrinterState());
+
+  useEffect(() => {
+    return store.subscribe(() => {
+      setPrinterState(store.getPrinterState());
+    });
+  }, []);
 
   const handleVoiceResult = useCallback(async (text: string) => {
     setIsProcessing(true);
@@ -107,8 +114,10 @@ export default function HomePage() {
             <span className="text-sm font-semibold text-foreground">AI智能打印</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-green-400" />
-            <span className="text-xs text-muted-foreground">打印机已连接</span>
+            <div className={`w-2 h-2 rounded-full ${printerState.status === 'connected' ? 'bg-green-400' : 'bg-gray-400'}`} />
+            <span className="text-xs text-muted-foreground">
+              {printerState.status === 'connected' ? '打印机已连接' : '打印机未连接'}
+            </span>
           </div>
         </div>
       </header>

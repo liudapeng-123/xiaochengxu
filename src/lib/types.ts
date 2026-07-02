@@ -46,3 +46,24 @@ export interface QuickAction {
 }
 
 export type TabType = 'home' | 'knowledge' | 'print' | 'profile';
+
+export interface PrinterDevice {
+  id: string;
+  name: string;
+  model: string;
+  firmware: string;
+  connectionType: 'Wi-Fi 直连' | '蓝牙' | 'Wi-Fi';
+  ipAddress?: string;
+  inkLevel: number;
+  paperRemaining: number;
+  paperSize: string;
+}
+
+export type PrinterConnectionStatus = 'connected' | 'disconnected' | 'connecting' | 'scanning';
+
+export interface PrinterState {
+  status: PrinterConnectionStatus;
+  device: PrinterDevice | null;
+  discoveredDevices: PrinterDevice[];
+  wifiConfig: { ssid: string; password: string } | null;
+}
