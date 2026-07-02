@@ -8,21 +8,24 @@ const defaultActions: QuickAction[] = [
     icon: '⌨️',
     label: '文本打印',
     command: '',
-    color: 'bg-gray-50 text-gray-600',
+    bgColor: 'bg-[#E0F0FF]',
+    iconColor: 'bg-[#E0F0FF] text-[#4A8FD4]',
   },
   {
     id: 'image_print',
     icon: '🖼️',
     label: '图片打印',
     command: '',
-    color: 'bg-cyan-50 text-cyan-600',
+    bgColor: 'bg-[#FDE8E4]',
+    iconColor: 'bg-[#FDE8E4] text-[#D47A5A]',
   },
   {
     id: 'doc_print',
-    icon: '📄',
+    icon: '',
     label: '文档打印',
     command: '',
-    color: 'bg-indigo-50 text-indigo-600',
+    bgColor: 'bg-[#F0E8FF]',
+    iconColor: 'bg-[#F0E8FF] text-[#8A6FD4]',
   },
 ];
 
@@ -39,9 +42,9 @@ export default function QuickActions({ onAction }: QuickActionsProps) {
           <button
             key={action.id}
             onClick={() => onAction(action)}
-            className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-card border border-border/50 hover:border-primary/30 active:scale-95 transition-all duration-150 shadow-sm"
+            className={`flex flex-col items-center gap-1.5 p-3 rounded-xl ${action.bgColor} border border-border/50 hover:border-primary/30 active:scale-95 transition-all duration-150 shadow-sm`}
           >
-            <span className={`w-10 h-10 rounded-xl ${action.color} flex items-center justify-center text-xl`}>
+            <span className={`w-10 h-10 rounded-xl ${action.iconColor} flex items-center justify-center text-xl`}>
               {action.icon}
             </span>
             <span className="text-xs text-foreground font-medium">{action.label}</span>

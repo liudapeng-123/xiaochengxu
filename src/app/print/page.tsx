@@ -31,7 +31,7 @@ export default function PrintPage() {
   return (
     <div className="safe-bottom">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-card/90 backdrop-blur-md border-b border-border/50">
+      <header className="sticky top-0 z-40 bg-[#E0F0FF]/90 backdrop-blur-md border-b border-border/50">
         <div className="px-4 h-12 flex items-center">
           <h1 className="text-base font-semibold text-foreground">打印记录</h1>
         </div>
@@ -40,16 +40,16 @@ export default function PrintPage() {
       <main className="px-4 pt-4 pb-6">
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-card rounded-xl border border-border/50 p-3 text-center shadow-sm">
+          <div className="bg-[#F0E8FF] rounded-xl border border-border/50 p-3 text-center shadow-sm">
             <p className="text-2xl font-bold text-primary">{jobs.length}</p>
             <p className="text-xs text-muted-foreground mt-0.5">总打印</p>
           </div>
-          <div className="bg-card rounded-xl border border-border/50 p-3 text-center shadow-sm">
-            <p className="text-2xl font-bold text-green-500">{completedJobs.length}</p>
+          <div className="bg-[#D1F5E1] rounded-xl border border-border/50 p-3 text-center shadow-sm">
+            <p className="text-2xl font-bold text-[#3D7A5A]">{completedJobs.length}</p>
             <p className="text-xs text-muted-foreground mt-0.5">已完成</p>
           </div>
-          <div className="bg-card rounded-xl border border-border/50 p-3 text-center shadow-sm">
-            <p className="text-2xl font-bold text-amber-500">{activeJobs.length}</p>
+          <div className="bg-[#FDE8E4] rounded-xl border border-border/50 p-3 text-center shadow-sm">
+            <p className="text-2xl font-bold text-[#D47A5A]">{activeJobs.length}</p>
             <p className="text-xs text-muted-foreground mt-0.5">进行中</p>
           </div>
         </div>

@@ -103,7 +103,7 @@ export default function HomePage() {
   return (
     <div className="safe-bottom">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-card/90 backdrop-blur-md border-b border-border/50">
+      <header className="sticky top-0 z-40 bg-[#E0F0FF]/90 backdrop-blur-md border-b border-border/50">
         <div className="flex items-center justify-between px-4 h-12">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -114,7 +114,7 @@ export default function HomePage() {
             <span className="text-sm font-semibold text-foreground">AI智能打印</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className={`w-2 h-2 rounded-full ${printerState.status === 'connected' ? 'bg-green-400' : 'bg-gray-400'}`} />
+            <div className={`w-2 h-2 rounded-full ${printerState.status === 'connected' ? 'bg-[#98E4AD]' : 'bg-[#9CA3AF]'}`} />
             <span className="text-xs text-muted-foreground">
               {printerState.status === 'connected' ? '打印机已连接' : '打印机未连接'}
             </span>
@@ -156,7 +156,7 @@ export default function HomePage() {
 
         {/* Tips */}
         <section className="w-full px-4 mt-6">
-          <div className="bg-secondary/50 rounded-xl p-4">
+          <div className="bg-[#EAF4FF] rounded-xl p-4">
             <p className="text-xs font-medium text-foreground mb-2">试试这样说：</p>
             <div className="space-y-1.5">
               {[
@@ -167,7 +167,7 @@ export default function HomePage() {
                 <button
                   key={tip}
                   onClick={() => handleVoiceResult(tip)}
-                  className="block w-full text-left text-xs text-muted-foreground hover:text-primary transition-colors py-1"
+                  className="block w-full text-left text-xs text-[#6B7A90] hover:text-primary transition-colors py-1"
                 >
                   <span className="text-primary/60 mr-1">"</span>
                   {tip}

@@ -59,17 +59,17 @@ export default function VoiceButton({ onResult, isProcessing }: VoiceButtonProps
         {/* Pulse rings when listening */}
         {isListening && (
           <>
-            <div className="absolute inset-0 rounded-full bg-amber-400/30 voice-active-ring" />
-            <div className="absolute inset-[-8px] rounded-full bg-amber-400/20 voice-active-ring" style={{ animationDelay: '0.3s' }} />
-            <div className="absolute inset-[-16px] rounded-full bg-amber-400/10 voice-active-ring" style={{ animationDelay: '0.6s' }} />
+            <div className="absolute inset-0 rounded-full bg-primary/30 voice-active-ring" />
+            <div className="absolute inset-[-8px] rounded-full bg-primary/20 voice-active-ring" style={{ animationDelay: '0.3s' }} />
+            <div className="absolute inset-[-16px] rounded-full bg-primary/10 voice-active-ring" style={{ animationDelay: '0.6s' }} />
           </>
         )}
 
         {/* Idle pulse rings */}
         {!isListening && !isPressed && (
           <>
-            <div className="absolute inset-0 rounded-full bg-amber-400/20 voice-pulse-ring" />
-            <div className="absolute inset-[-8px] rounded-full bg-amber-400/10 voice-pulse-ring" style={{ animationDelay: '0.7s' }} />
+            <div className="absolute inset-0 rounded-full bg-primary/20 voice-pulse-ring" />
+            <div className="absolute inset-[-8px] rounded-full bg-primary/10 voice-pulse-ring" style={{ animationDelay: '0.7s' }} />
           </>
         )}
 
@@ -84,8 +84,8 @@ export default function VoiceButton({ onResult, isProcessing }: VoiceButtonProps
             transition-all duration-200 ease-out
             shadow-lg
             ${isListening || isPressed
-              ? 'bg-amber-500 scale-110 shadow-amber-300/50'
-              : 'bg-gradient-to-br from-amber-400 to-orange-500 shadow-amber-300/40 hover:shadow-amber-300/60'
+              ? 'bg-primary scale-110 shadow-primary/50'
+              : 'bg-gradient-to-br from-primary to-[#6AC4FE] shadow-primary/40 hover:shadow-primary/60'
             }
             ${isProcessing ? 'opacity-60' : ''}
             active:scale-95
@@ -118,7 +118,7 @@ export default function VoiceButton({ onResult, isProcessing }: VoiceButtonProps
       <div className="text-center min-h-[48px]">
         {isListening ? (
           <div className="animate-fade-in">
-            <p className="text-sm text-amber-600 font-medium">正在聆听...</p>
+            <p className="text-sm text-primary font-medium">正在聆听...</p>
             {transcript && (
               <p className="text-xs text-muted-foreground mt-1 max-w-[240px] truncate">
                 &quot;{transcript}&quot;

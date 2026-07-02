@@ -140,10 +140,10 @@ function ManualPageContent() {
   }, [mode, router]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #E2E2F9 0%, #F7FBFF 35%, #BCE2FD 100%)' }}>
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-card/90 backdrop-blur-md border-b border-border/50">
-        <div className="flex items-center justify-between px-4 h-12">
+      <header className="sticky top-0 z-40 bg-[#E0F0FF]/90 backdrop-blur-md border-b border-border/50">
+        <div className="flex items-center px-4 h-12">
           <button
             onClick={() => router.back()}
             className="flex items-center gap-1 text-primary"
@@ -153,8 +153,6 @@ function ManualPageContent() {
             </svg>
             <span className="text-sm">返回</span>
           </button>
-          <h1 className="text-sm font-medium text-foreground">手动输入</h1>
-          <div className="w-12" />
         </div>
       </header>
 
@@ -213,8 +211,8 @@ function ManualPageContent() {
               onClick={() => fileInputRef.current?.click()}
               className="bg-card rounded-xl border-2 border-dashed border-border p-8 flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors"
             >
-              <div className="w-16 h-16 rounded-full bg-cyan-50 flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <div className="w-16 h-16 rounded-full bg-[#E0F0FF] flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-[#59B0FE]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
@@ -224,7 +222,7 @@ function ManualPageContent() {
 
             {fileName && (
               <div className="mt-4 bg-card rounded-xl border border-border/50 p-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-cyan-50 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-[#E0F0FF] flex items-center justify-center">
                   <span className="text-lg">🖼️</span>
                 </div>
                 <div className="flex-1 min-w-0">
@@ -256,8 +254,8 @@ function ManualPageContent() {
               onClick={() => fileInputRef.current?.click()}
               className="bg-card rounded-xl border-2 border-dashed border-border p-8 flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors"
             >
-              <div className="w-16 h-16 rounded-full bg-indigo-50 flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <div className="w-16 h-16 rounded-full bg-[#F0E8FF] flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-[#8A6FD4]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
@@ -267,7 +265,7 @@ function ManualPageContent() {
 
             {fileName && (
               <div className="mt-4 bg-card rounded-xl border border-border/50 p-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-[#F0E8FF] flex items-center justify-center">
                   <span className="text-lg">📄</span>
                 </div>
                 <div className="flex-1 min-w-0">
@@ -298,8 +296,8 @@ function ManualPageContent() {
 
 function ManualPageFallback() {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 bg-card/90 backdrop-blur-md border-b border-border/50">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #E2E2F9 0%, #F7FBFF 35%, #BCE2FD 100%)' }}>
+      <header className="sticky top-0 z-40 bg-[#E0F0FF]/90 backdrop-blur-md border-b border-border/50">
         <div className="flex items-center justify-center px-4 h-12">
           <h1 className="text-sm font-medium text-foreground">手动输入</h1>
         </div>

@@ -130,9 +130,9 @@ function PreviewPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #E2E2F9 0%, #F7FBFF 35%, #BCE2FD 100%)' }}>
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-card/90 backdrop-blur-md border-b border-border/50">
+      <header className="sticky top-0 z-40 bg-[#E0F0FF]/90 backdrop-blur-md border-b border-border/50">
         <div className="flex items-center justify-between px-4 h-12">
           <button
             onClick={() => router.back()}
@@ -161,12 +161,12 @@ function PreviewPageContent() {
               {typeLabels[content.type] || content.type}
             </span>
             {content.metadata.grade && (
-              <span className="px-2 py-0.5 rounded-md bg-green-100 text-green-700 text-xs">
+              <span className="px-2 py-0.5 rounded-md bg-[#D1F5E1] text-[#3D7A5A] text-xs">
                 {content.metadata.grade}
               </span>
             )}
             {content.metadata.count && (
-              <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-700 text-xs">
+              <span className="px-2 py-0.5 rounded-md bg-[#F0E8FF] text-[#8A6FD4] text-xs">
                 {content.metadata.count}{countUnits[content.type] || '个'}
               </span>
             )}
@@ -225,10 +225,10 @@ function PreviewPageContent() {
                 <span className="text-lg">✅</span>
               )}
             </div>
-            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-2 bg-[#E0F0FF] rounded-full overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all duration-300 ${
-                  printStatus === 'completed' ? 'bg-green-500' : 'bg-primary'
+                  printStatus === 'completed' ? 'bg-[#98E4AD]' : 'bg-primary'
                 }`}
                 style={{ width: `${progress}%` }}
               />
@@ -269,8 +269,8 @@ function PreviewPageContent() {
 
 function PreviewPageFallback() {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 bg-card/90 backdrop-blur-md border-b border-border/50">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #E2E2F9 0%, #F7FBFF 35%, #BCE2FD 100%)' }}>
+      <header className="sticky top-0 z-40 bg-[#E0F0FF]/90 backdrop-blur-md border-b border-border/50">
         <div className="flex items-center justify-center px-4 h-12">
           <h1 className="text-sm font-medium text-foreground">内容预览</h1>
         </div>

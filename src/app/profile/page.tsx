@@ -72,11 +72,11 @@ export default function ProfilePage() {
   const monthlyPages = monthlyPrints;
   const totalPages = totalPrints;
   const typeStats = [
-    { label: '口算题', count: countJobsByType(monthlyJobs, ['math_arithmetic']), color: 'bg-blue-400' },
-    { label: '应用题', count: countJobsByType(monthlyJobs, ['math_word']), color: 'bg-purple-400' },
-    { label: '生字表', count: countJobsByType(monthlyJobs, ['chinese_chars']), color: 'bg-green-400' },
-    { label: '英语单词', count: countJobsByType(monthlyJobs, ['english_words']), color: 'bg-pink-400' },
-    { label: '文档/图片', count: countJobsByType(monthlyJobs, ['document', 'image']), color: 'bg-gray-400' },
+    { label: '口算题', count: countJobsByType(monthlyJobs, ['math_arithmetic']), color: 'bg-[#84C5F9]' },
+    { label: '应用题', count: countJobsByType(monthlyJobs, ['math_word']), color: 'bg-[#C197FA]' },
+    { label: '生字表', count: countJobsByType(monthlyJobs, ['chinese_chars']), color: 'bg-[#98E4AD]' },
+    { label: '英语单词', count: countJobsByType(monthlyJobs, ['english_words']), color: 'bg-[#F7A38D]' },
+    { label: '文档/图片', count: countJobsByType(monthlyJobs, ['document', 'image']), color: 'bg-[#9CA3AF]' },
   ];
   const recentJobs = completedJobs.slice(0, 4);
 
@@ -120,18 +120,18 @@ export default function ProfilePage() {
   return (
     <div className="safe-bottom min-h-screen flex flex-col">
       {/* Header */}
-      <header className="bg-gradient-to-br from-primary to-blue-600 px-4 pt-8 pb-6">
+      <header className="bg-[#E0F0FF] px-4 pt-8 pb-6">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center">
-            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <div className="w-14 h-14 rounded-full bg-[#59B0FE]/20 flex items-center justify-center">
+            <svg className="w-8 h-8 text-[#59B0FE]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
           <div className="flex-1">
-            <h2 className="text-lg font-semibold text-white">AI智能打印助手</h2>
+            <h2 className="text-lg font-semibold text-foreground">AI智能打印助手</h2>
             <button
               onClick={() => setActiveModal('grade')}
-              className="inline-flex items-center gap-1 mt-1 px-2.5 py-0.5 rounded-full bg-white/15 text-white/90 text-xs active:bg-white/25 transition-colors"
+              className="inline-flex items-center gap-1 mt-1 px-2.5 py-0.5 rounded-full bg-[#59B0FE]/10 text-primary text-xs active:bg-[#59B0FE]/20 transition-colors"
             >
               {selectedGrade}
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -144,7 +144,7 @@ export default function ProfilePage() {
 
       {/* Menu */}
       <main className="px-4 mt-4 flex-1 flex flex-col">
-        <div className="bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden">
+        <div className="bg-white/85 rounded-xl border border-border/50 shadow-sm overflow-hidden">
           {/* 打印机管理 */}
           <MenuRow
             icon="🖨️"
@@ -212,13 +212,13 @@ export default function ProfilePage() {
                   {printerState.status === 'connected' && printerState.device ? (
                     <>
                       {/* Connected Status Card */}
-                      <div className="bg-green-50 rounded-xl p-4 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                          <div className="w-3 h-3 rounded-full bg-green-500" />
+                      <div className="bg-[#D1F5E1] rounded-xl p-4 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#98E4AD]/30 flex items-center justify-center">
+                          <div className="w-3 h-3 rounded-full bg-[#98E4AD]" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-green-800">已连接</p>
-                          <p className="text-xs text-green-600">{printerState.device.name}</p>
+                          <p className="text-sm font-medium text-[#3D7A5A]">已连接</p>
+                          <p className="text-xs text-[#3D7A5A]/70">{printerState.device.name}</p>
                         </div>
                       </div>
 
@@ -238,16 +238,16 @@ export default function ProfilePage() {
                   ) : printerState.status === 'scanning' ? (
                     <>
                       {/* Scanning State */}
-                      <div className="bg-blue-50 rounded-xl p-4 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                          <svg className="w-5 h-5 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <div className="bg-[#E0F0FF] rounded-xl p-4 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#84C5F9]/30 flex items-center justify-center">
+                          <svg className="w-5 h-5 text-[#4A8FD4] animate-spin" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                           </svg>
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-blue-800">正在搜索设备...</p>
-                          <p className="text-xs text-blue-600">通过蓝牙扫描附近的打印机</p>
+                          <p className="text-sm font-medium text-[#4A8FD4]">正在搜索设备...</p>
+                          <p className="text-xs text-[#4A8FD4]/70">通过蓝牙扫描附近的打印机</p>
                         </div>
                       </div>
 
@@ -283,13 +283,13 @@ export default function ProfilePage() {
                   ) : (
                     <>
                       {/* Disconnected State */}
-                      <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                          <div className="w-3 h-3 rounded-full bg-gray-400" />
+                      <div className="bg-[#F0F2F5] rounded-xl p-4 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#9CA3AF]/20 flex items-center justify-center">
+                          <div className="w-3 h-3 rounded-full bg-[#9CA3AF]" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-600">未连接</p>
-                          <p className="text-xs text-gray-400">点击重新搜索查找打印机</p>
+                          <p className="text-sm font-medium text-[#6B7A90]">未连接</p>
+                          <p className="text-xs text-[#6B7A90]/70">点击重新搜索查找打印机</p>
                         </div>
                       </div>
                     </>
@@ -396,15 +396,15 @@ export default function ProfilePage() {
                   ) : (
                     <>
                       {/* Success State */}
-                      <div className="bg-green-50 rounded-xl p-6 flex flex-col items-center gap-3">
-                        <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
-                          <svg className="w-7 h-7 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <div className="bg-[#D1F5E1] rounded-xl p-6 flex flex-col items-center gap-3">
+                        <div className="w-14 h-14 rounded-full bg-[#98E4AD]/30 flex items-center justify-center">
+                          <svg className="w-7 h-7 text-[#3D7A5A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                           </svg>
                         </div>
                         <div className="text-center">
-                          <p className="text-sm font-medium text-green-800">配网成功</p>
-                          <p className="text-xs text-green-600 mt-1">打印机已连接到 WiFi: {wifiSsid}</p>
+                          <p className="text-sm font-medium text-[#3D7A5A]">配网成功</p>
+                          <p className="text-xs text-[#3D7A5A]/70 mt-1">打印机已连接到 WiFi: {wifiSsid}</p>
                         </div>
                       </div>
 
@@ -433,9 +433,9 @@ export default function ProfilePage() {
                   {/* Summary Cards */}
                   <div className="grid grid-cols-2 gap-3">
                     <StatCard label="本月打印" value={String(monthlyPrints)} unit="份" color="text-primary" />
-                    <StatCard label="累计打印" value={String(totalPrints)} unit="份" color="text-green-500" />
-                    <StatCard label="本月页数" value={String(monthlyPages)} unit="页" color="text-amber-500" />
-                    <StatCard label="累计页数" value={String(totalPages)} unit="页" color="text-purple-500" />
+                    <StatCard label="累计打印" value={String(totalPrints)} unit="份" color="text-[#3D7A5A]" />
+                    <StatCard label="本月页数" value={String(monthlyPages)} unit="页" color="text-[#D47A5A]" />
+                    <StatCard label="累计页数" value={String(totalPages)} unit="页" color="text-[#8A6FD4]" />
                   </div>
 
                   {/* Type Breakdown */}
@@ -637,18 +637,18 @@ export default function ProfilePage() {
                   {/* 使用技巧 */}
                   <div>
                     <p className="text-sm font-medium text-foreground mb-3">使用技巧</p>
-                    <div className="bg-blue-50 rounded-xl p-4 space-y-2.5">
+                    <div className="bg-[#E0F0FF] rounded-xl p-4 space-y-2.5">
                       <div className="flex items-start gap-2">
-                        <span className="text-blue-500 mt-0.5">💡</span>
-                        <p className="text-xs text-blue-700 leading-relaxed">语音指令支持自然语言，如"帮我出50道10以内加法题"</p>
+                        <span className="text-[#59B0FE] mt-0.5">💡</span>
+                        <p className="text-xs text-[#4A8FD4] leading-relaxed">语音指令支持自然语言，如"帮我出50道10以内加法题"</p>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-blue-500 mt-0.5">💡</span>
-                        <p className="text-xs text-blue-700 leading-relaxed">可以在顶部切换年级，AI会根据年级自动调整内容难度</p>
+                        <span className="text-[#59B0FE] mt-0.5">💡</span>
+                        <p className="text-xs text-[#4A8FD4] leading-relaxed">可以在顶部切换年级，AI会根据年级自动调整内容难度</p>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-blue-500 mt-0.5">💡</span>
-                        <p className="text-xs text-blue-700 leading-relaxed">打印记录中可以查看历史任务，支持重新打印</p>
+                        <span className="text-[#59B0FE] mt-0.5">💡</span>
+                        <p className="text-xs text-[#4A8FD4] leading-relaxed">打印记录中可以查看历史任务，支持重新打印</p>
                       </div>
                     </div>
                   </div>
@@ -771,7 +771,7 @@ function TypeBar({ label, count, total, color }: {
   return (
     <div className="flex items-center gap-2">
       <span className="text-xs text-muted-foreground w-16 shrink-0">{label}</span>
-      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+      <div className="flex-1 h-2 bg-[#E0F0FF] rounded-full overflow-hidden">
         <div className={`h-full ${color} rounded-full`} style={{ width: `${pct}%` }} />
       </div>
       <span className="text-xs text-muted-foreground w-8 text-right">{count}份</span>
@@ -832,7 +832,7 @@ function ToggleRow({ label, desc, enabled, onChange }: {
         onClick={() => onChange(!enabled)}
         className={`
           w-11 h-6 rounded-full transition-colors duration-200 relative
-          ${enabled ? 'bg-primary' : 'bg-gray-300'}
+          ${enabled ? 'bg-primary' : 'bg-[#D1D5DB]'}
         `}
       >
         <div

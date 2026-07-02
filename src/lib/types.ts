@@ -42,7 +42,9 @@ export interface QuickAction {
   icon: string;
   label: string;
   command: string;
-  color: string;
+  color?: string;
+  bgColor?: string;
+  iconColor?: string;
 }
 
 export type TabType = 'home' | 'knowledge' | 'print' | 'profile';

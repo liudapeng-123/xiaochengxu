@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className="antialiased">
-        <div className="mx-auto max-w-[480px] min-h-screen relative bg-background">
+        <div className="mx-auto max-w-[480px] min-h-screen relative" style={{ background: 'linear-gradient(135deg, #E2E2F9 0%, #F7FBFF 35%, #BCE2FD 100%)' }}>
           {children}
         </div>
       </body>

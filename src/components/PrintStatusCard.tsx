@@ -8,11 +8,11 @@ interface PrintStatusCardProps {
 }
 
 const statusConfig: Record<PrintJob['status'], { label: string; color: string; bgColor: string; icon: string }> = {
-  queued: { label: '排队中', color: 'text-gray-600', bgColor: 'bg-gray-100', icon: '⏳' },
-  sending: { label: '发送中', color: 'text-blue-600', bgColor: 'bg-blue-100', icon: '📤' },
-  printing: { label: '打印中', color: 'text-amber-600', bgColor: 'bg-amber-100', icon: '🖨️' },
-  completed: { label: '已完成', color: 'text-green-600', bgColor: 'bg-green-100', icon: '✅' },
-  failed: { label: '失败', color: 'text-red-600', bgColor: 'bg-red-100', icon: '❌' },
+  queued: { label: '排队中', color: 'text-[#6B7A90]', bgColor: 'bg-[#F0F2F5]', icon: '⏳' },
+  sending: { label: '发送中', color: 'text-[#4A8FD4]', bgColor: 'bg-[#E0F0FF]', icon: '📤' },
+  printing: { label: '打印中', color: 'text-[#D47A5A]', bgColor: 'bg-[#FDE8E4]', icon: '🖨️' },
+  completed: { label: '已完成', color: 'text-[#3D7A5A]', bgColor: 'bg-[#D1F5E1]', icon: '✅' },
+  failed: { label: '失败', color: 'text-[#EF4444]', bgColor: 'bg-[#FFE4E6]', icon: '❌' },
 };
 
 const typeLabels: Record<string, string> = {
@@ -55,9 +55,9 @@ export default function PrintStatusCard({ job, onClick }: PrintStatusCardProps) 
       {/* Progress bar */}
       {(job.status === 'sending' || job.status === 'printing') && (
         <div className="mt-3">
-          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-[#E0F0FF] rounded-full overflow-hidden">
             <div
-              className="h-full bg-primary rounded-full transition-all duration-500"
+              className="h-full bg-gradient-to-r from-primary to-[#6AC4FE] rounded-full transition-all duration-500"
               style={{ width: `${job.progress}%` }}
             />
           </div>

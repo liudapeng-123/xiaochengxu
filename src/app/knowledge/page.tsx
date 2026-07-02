@@ -40,7 +40,7 @@ export default function KnowledgePage() {
 
   return (
     <div className="safe-bottom">
-      <header className="sticky top-0 z-40 bg-card/90 backdrop-blur-md border-b border-border/50">
+      <header className="sticky top-0 z-40 bg-[#E0F0FF]/90 backdrop-blur-md border-b border-border/50">
         <div className="px-4 h-12 flex items-center">
           <h1 className="text-base font-semibold text-foreground">知识库</h1>
         </div>
@@ -48,9 +48,9 @@ export default function KnowledgePage() {
 
       <main className="px-4 pt-4 pb-6">
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <StatBox value={String(contents.length)} label="全部内容" color="text-primary" />
-          <StatBox value={String(printedCount)} label="已打印" color="text-green-500" />
-          <StatBox value={String(assetCount)} label="文件资料" color="text-amber-500" />
+          <StatBox value={String(contents.length)} label="全部内容" color="text-primary" bgColor="bg-[#F0E8FF]" />
+          <StatBox value={String(printedCount)} label="已打印" color="text-[#3D7A5A]" bgColor="bg-[#D1F5E1]" />
+          <StatBox value={String(assetCount)} label="文件资料" color="text-[#D47A5A]" bgColor="bg-[#FDE8E4]" />
         </div>
 
         <section className="mb-6">
@@ -66,7 +66,7 @@ export default function KnowledgePage() {
                   key={content.id}
                   type="button"
                   onClick={() => router.push(`/preview?id=${content.id}`)}
-                  className="w-full bg-card rounded-xl border border-border/50 p-4 text-left shadow-sm active:scale-[0.99] hover:border-primary/30 transition-all"
+                  className="w-full bg-white rounded-xl border border-border/50 p-4 text-left shadow-sm active:scale-[0.99] hover:border-primary/30 transition-all"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
@@ -91,17 +91,17 @@ export default function KnowledgePage() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-20 bg-card rounded-xl border border-border/50 shadow-sm">
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <div className="flex flex-col items-center justify-center py-20 bg-[#E0F0FF] rounded-xl border border-border/50 shadow-sm">
+              <div className="w-16 h-16 rounded-full bg-[#E0F0FF] flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-[#4A8FD4]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 19.25V4.75A2.75 2.75 0 016.75 2h10.5A2.75 2.75 0 0120 4.75v14.5A2.75 2.75 0 0117.25 22H6.75A2.75 2.75 0 014 19.25zM8.75 7.25h6.5M8.75 11.25h6.5M8.75 15.25h3.5" />
                 </svg>
               </div>
-              <p className="text-sm text-muted-foreground">暂无知识库内容</p>
+              <p className="text-sm text-[#4A8FD4]">暂无知识库内容</p>
               <button
                 type="button"
                 onClick={() => router.push('/')}
-                className="mt-4 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium"
+                className="mt-4 px-4 py-2 rounded-lg bg-[#59B0FE] text-white text-sm font-medium"
               >
                 去生成内容
               </button>
@@ -115,9 +115,9 @@ export default function KnowledgePage() {
   );
 }
 
-function StatBox({ value, label, color }: { value: string; label: string; color: string }) {
+function StatBox({ value, label, color, bgColor }: { value: string; label: string; color: string; bgColor?: string }) {
   return (
-    <div className="bg-card rounded-xl border border-border/50 p-3 text-center shadow-sm">
+    <div className={`${bgColor || 'bg-card'} rounded-xl border border-border/50 p-3 text-center shadow-sm`}>
       <p className={`text-2xl font-bold ${color}`}>{value}</p>
       <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
     </div>

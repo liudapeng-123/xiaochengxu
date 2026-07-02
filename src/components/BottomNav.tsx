@@ -64,7 +64,7 @@ const tabs: Array<{ id: TabType; label: string; icon: (active: boolean) => React
 
 export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   return (
-    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-card/95 backdrop-blur-lg border-t border-border z-50">
+    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-[#E0F0FF]/95 backdrop-blur-lg border-t border-border z-50">
       <div className="flex items-center justify-around h-[var(--nav-height)]" style={{ paddingBottom: 'var(--safe-bottom)' }}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
