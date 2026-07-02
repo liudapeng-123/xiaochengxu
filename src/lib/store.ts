@@ -5,18 +5,8 @@ let _printJobs: PrintJob[] = [];
 let _activeTab: TabType = 'home';
 let _selectedGrade = '三年级';
 let _printerState: PrinterState = {
-  status: 'connected',
-  device: {
-    id: 'printer-001',
-    name: 'AI智能打印机 Pro',
-    model: 'AP-2024X',
-    firmware: 'v3.2.1',
-    connectionType: 'Wi-Fi 直连',
-    ipAddress: '192.168.1.100',
-    inkLevel: 85,
-    paperRemaining: 200,
-    paperSize: 'A4',
-  },
+  status: 'disconnected',
+  device: null,
   discoveredDevices: [],
   wifiConfig: null,
 };

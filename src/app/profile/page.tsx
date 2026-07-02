@@ -289,9 +289,42 @@ export default function ProfilePage() {
                         </div>
                         <div>
                           <p className="text-sm font-medium text-[#6B7A90]">未连接</p>
-                          <p className="text-xs text-[#6B7A90]/70">点击重新搜索查找打印机</p>
+                          <p className="text-xs text-[#6B7A90]/70">
+                            {printerState.discoveredDevices.length > 0
+                              ? `已发现 ${printerState.discoveredDevices.length} 台设备，请选择连接`
+                              : '点击重新搜索查找打印机'}
+                          </p>
                         </div>
                       </div>
+
+                      {printerState.discoveredDevices.length > 0 && (
+                        <div className="space-y-2">
+                          <p className="text-xs text-muted-foreground font-medium">发现的设备：</p>
+                          {printerState.discoveredDevices.map((device) => (
+                            <button
+                              key={device.id}
+                              onClick={() => {
+                                setSelectedDevice(device);
+                                setActiveModal('wifi');
+                              }}
+                              className="w-full flex items-center gap-3 p-3 rounded-xl border border-border/50 bg-card hover:bg-muted/50 active:bg-muted transition-colors text-left"
+                            >
+                              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.858 15.355-5.858 21.213 0" />
+                                </svg>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-foreground">{device.name}</p>
+                                <p className="text-xs text-muted-foreground">{device.model} · {device.connectionType}</p>
+                              </div>
+                              <svg className="w-4 h-4 text-muted-foreground/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                              </svg>
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </>
                   )}
 

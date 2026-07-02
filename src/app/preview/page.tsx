@@ -23,6 +23,7 @@ function PreviewPageContent() {
   const [isSending, setIsSending] = useState(false);
   const [printStatus, setPrintStatus] = useState<'idle' | 'sending' | 'printing' | 'completed'>('idle');
   const [progress, setProgress] = useState(0);
+  const [printerConnected, setPrinterConnected] = useState(() => store.getPrinterState().status === 'connected');
   const printIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -36,6 +37,13 @@ function PreviewPageContent() {
   }, [id]);
 
   useEffect(() => {
+    const unsub = store.subscribe(() => {
+      setPrinterConnected(store.getPrinterState().status === 'connected');
+    });
+    return () => { unsub(); };
+  }, []);
+
+  useEffect(() => {
     return () => {
       if (printIntervalRef.current) {
         clearInterval(printIntervalRef.current);
@@ -45,6 +53,14 @@ function PreviewPageContent() {
 
   const handleSendPrint = useCallback(async () => {
     if (!content) return;
+    
+    // 检查打印机连接状态
+    const printerState = store.getPrinterState();
+    if (printerState.status !== 'connected' || !printerState.device) {
+      alert('请先连接打印机');
+      return;
+    }
+    
     if (printIntervalRef.current) {
       clearInterval(printIntervalRef.current);
       printIntervalRef.current = null;
@@ -249,17 +265,17 @@ function PreviewPageContent() {
           </button>
           <button
             onClick={handleSendPrint}
-            disabled={isSending || printStatus === 'completed'}
+            disabled={!printerConnected || isSending || printStatus === 'completed'}
             className={`
               flex-[2] h-12 rounded-xl text-sm font-medium text-white
               active:scale-[0.98] transition-all
-              ${isSending || printStatus === 'completed'
+              ${!printerConnected || isSending || printStatus === 'completed'
                 ? 'bg-gray-300 cursor-not-allowed'
                 : 'bg-primary shadow-lg shadow-primary/30 hover:bg-primary/90'
               }
             `}
           >
-            {isSending ? '发送中...' : printStatus === 'completed' ? '已打印' : '发送打印'}
+            {!printerConnected ? '请先连接打印机' : isSending ? '发送中...' : printStatus === 'completed' ? '已打印' : '发送打印'}
           </button>
         </div>
       </div>
