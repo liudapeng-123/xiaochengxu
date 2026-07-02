@@ -1,19 +1,51 @@
 import { GeneratedContent, PrintJob, TabType, PrinterDevice, PrinterConnectionStatus, PrinterState } from './types';
 
+const STORAGE_KEY = 'ai-printer-state';
+
+function loadPrinterState(): PrinterState {
+  if (typeof window === 'undefined') {
+    return {
+      status: 'disconnected',
+      device: null,
+      discoveredDevices: [],
+      wifiConfig: null,
+    };
+  }
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      return JSON.parse(saved);
+    }
+  } catch (e) {
+    console.error('Failed to load printer state:', e);
+  }
+  return {
+    status: 'disconnected',
+    device: null,
+    discoveredDevices: [],
+    wifiConfig: null,
+  };
+}
+
+function savePrinterState(state: PrinterState) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.error('Failed to save printer state:', e);
+  }
+}
+
 let _contents: GeneratedContent[] = [];
 let _printJobs: PrintJob[] = [];
 let _activeTab: TabType = 'home';
 let _selectedGrade = '三年级';
-let _printerState: PrinterState = {
-  status: 'disconnected',
-  device: null,
-  discoveredDevices: [],
-  wifiConfig: null,
-};
+let _printerState: PrinterState = loadPrinterState();
 let _listeners: Array<() => void> = [];
 
 function notify() {
   _listeners.forEach(fn => fn());
+  savePrinterState(_printerState);
 }
 
 export const store = {
