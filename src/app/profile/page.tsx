@@ -51,6 +51,8 @@ export default function ProfilePage() {
   const [jobs, setJobs] = useState(() => store.getPrintJobs());
   const [printerState, setPrinterState] = useState<PrinterState>(() => store.getPrinterState());
   const [notifyEnabled, setNotifyEnabled] = useState(true);
+  const [errorNotifyEnabled, setErrorNotifyEnabled] = useState(true);
+  const [paperNotifyEnabled, setPaperNotifyEnabled] = useState(true);
   const [selectedDevice, setSelectedDevice] = useState<PrinterDevice | null>(null);
   const [wifiSsid, setWifiSsid] = useState('');
   const [wifiPassword, setWifiPassword] = useState('');
@@ -551,20 +553,23 @@ export default function ProfilePage() {
                   <ToggleRow
                     label="错误提醒"
                     desc="打印出错时发送通知"
-                    enabled={true}
-                    onChange={() => {}}
+                    enabled={errorNotifyEnabled}
+                    onChange={setErrorNotifyEnabled}
                   />
                   <ToggleRow
                     label="缺纸/缺墨提醒"
                     desc="纸张或墨量不足时提醒"
-                    enabled={true}
-                    onChange={() => {}}
+                    enabled={paperNotifyEnabled}
+                    onChange={setPaperNotifyEnabled}
                   />
 
                   <div className="pt-2 border-t border-border/50">
                     <button
                       onClick={() => {
-                        setNotifyEnabled(!notifyEnabled);
+                        const newState = !notifyEnabled;
+                        setNotifyEnabled(newState);
+                        setErrorNotifyEnabled(newState);
+                        setPaperNotifyEnabled(newState);
                         closeModal();
                       }}
                       className={`
