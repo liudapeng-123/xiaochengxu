@@ -208,3 +208,331 @@
 .safe-bottom {
   padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 8px);
 }
+
+/* A4 纸张预览样式 */
+.a4-page {
+  width: 794px;
+  min-height: 1123px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.a4-page:last-child {
+  margin-bottom: 0;
+}
+
+.a4-page-content {
+  padding: 76px 57px 57px 57px; /* top: 20mm, bottom: 15mm, left/right: 15mm */
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.a4-header {
+  position: absolute;
+  top: 20px;
+  left: 57px;
+  right: 57px;
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 8px;
+}
+
+.a4-footer {
+  position: absolute;
+  bottom: 20px;
+  left: 57px;
+  right: 57px;
+  text-align: center;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* 田字格样式 - 用于生字表 */
+.tianzige-grid {
+  display: inline-grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.tianzige-cell {
+  aspect-ratio: 1;
+  border: 2px solid #374151;
+  position: relative;
+  background: #ffffff;
+}
+
+.tianzige-cell::before,
+.tianzige-cell::after {
+  content: '';
+  position: absolute;
+  background: #d1d5db;
+}
+
+.tianzige-cell::before {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.tianzige-cell::after {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+}
+
+.tianzige-char {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-family: 'KaiTi', 'STKaiti', serif;
+  color: #1f2937;
+  z-index: 1;
+}
+
+/* 带拼音的田字格布局 */
+.tianzige-cell-with-pinyin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.tianzige-pinyin {
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+  min-height: 20px;
+}
+
+/* 生字表一行一行排版 */
+.chinese-chars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chinese-char-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.chinese-char {
+  font-size: 28px;
+  font-family: 'KaiTi', 'STKaiti', serif;
+  color: #1f2937;
+  min-width: 40px;
+}
+
+.chinese-char-info {
+  font-size: 14px;
+  color: #6b7280;
+  flex: 1;
+}
+
+/* 四线三格 - 用于英语练字 */
+.writing-lines {
+  width: 100%;
+  position: relative;
+}
+
+.writing-line {
+  height: 40px;
+  margin-bottom: 20px;
+  position: relative;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 9px,
+    #9ca3af 9px,
+    #9ca3af 10px,
+    transparent 10px,
+    transparent 19px,
+    #374151 19px,
+    #374151 20px,
+    transparent 20px,
+    transparent 29px,
+    #9ca3af 29px,
+    #9ca3af 30px,
+    transparent 30px,
+    transparent 40px
+  );
+}
+
+.writing-line-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 8px 4px 8px;
+  font-size: 24px;
+  font-family: 'Times New Roman', serif;
+  color: #1f2937;
+}
+
+/* 口算题两列布局 */
+.math-two-col {
+  display: flex;
+  gap: 40px;
+  width: 100%;
+}
+
+.math-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.math-col-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.math-col-num {
+  color: #6b7280;
+  font-size: 14px;
+  min-width: 32px;
+  margin-right: 8px;
+}
+
+.math-col-text {
+  flex: 1;
+  color: #1f2937;
+  font-size: 16px;
+}
+
+.math-col-blank {
+  width: 56px;
+  margin-left: 4px;
+}
+
+/* 应用题样式 */
+.word-problem-item {
+  margin-bottom: 16px;
+}
+
+.word-problem-header {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.word-problem-num {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 24px;
+}
+
+.word-problem-text {
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #1f2937;
+}
+
+.word-problem-answer {
+  margin-top: 8px;
+  margin-left: 28px;
+  border-bottom: 1px solid #d1d5db;
+  height: 32px;
+}
+
+/* 英语单词列表 */
+.english-words-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 32px;
+}
+
+.english-word-item {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.english-word {
+  font-size: 18px;
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 2px;
+}
+
+.english-meaning {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* 通用文本排版 */
+.text-document {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #1f2937;
+  text-align: justify;
+}
+
+.text-document p {
+  text-indent: 2em;
+  margin-bottom: 12px;
+}
+
+/* 图片居中 */
+.image-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 600px;
+}
+
+.image-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* 打印媒体查询 */
+@media print {
+  body {
+    background: white !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .a4-page {
+    box-shadow: none;
+    page-break-after: always;
+    width: 210mm;
+    min-height: 297mm;
+  }
+
+  .a4-page:last-child {
+    page-break-after: auto;
+  }
+
+  .a4-page-wrapper {
+    transform: none !important;
+  }
+}

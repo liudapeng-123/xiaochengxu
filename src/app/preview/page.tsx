@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { store } from '@/lib/store';
 import { GeneratedContent, PrintJob } from '@/lib/types';
+import { A4Preview } from '@/components/a4-preview';
 
 export default function PreviewPage() {
   return (
@@ -20,6 +21,7 @@ function PreviewPageContent() {
 
   const [content, setContent] = useState<GeneratedContent | null>(null);
   const [editedContent, setEditedContent] = useState('');
+  const [viewMode, setViewMode] = useState<'preview' | 'edit'>('preview');
   const [isSending, setIsSending] = useState(false);
   const [printStatus, setPrintStatus] = useState<'idle' | 'sending' | 'printing' | 'completed'>('idle');
   const [progress, setProgress] = useState(0);
@@ -175,30 +177,40 @@ function PreviewPageContent() {
         </div>
       </div>
 
+      {/* View Mode Toggle */}
+      <div className="px-4 pb-2">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setViewMode('preview')}
+            className={`flex-1 h-10 rounded-lg text-sm font-medium transition-all ${
+              viewMode === 'preview'
+                ? 'bg-primary text-white shadow-sm'
+                : 'bg-card text-foreground border border-border/50'
+            }`}
+          >
+            A4 预览
+          </button>
+          <button
+            onClick={() => setViewMode('edit')}
+            className={`flex-1 h-10 rounded-lg text-sm font-medium transition-all ${
+              viewMode === 'edit'
+                ? 'bg-primary text-white shadow-sm'
+                : 'bg-card text-foreground border border-border/50'
+            }`}
+          >
+            编辑内容
+          </button>
+        </div>
+      </div>
+
       {/* Preview Content */}
-      <div className="px-4 pb-4">
-        {content.type === 'image' && content.metadata.previewUrl ? (
-          <div className="bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
-              <span className="text-xs text-muted-foreground">图片预览</span>
-              {content.metadata.size && (
-                <span className="text-xs text-muted-foreground">
-                  {(content.metadata.size / 1024).toFixed(1)} KB
-                </span>
-              )}
-            </div>
-            <div className="bg-white p-3">
-              <img
-                src={content.metadata.previewUrl}
-                alt={content.metadata.fileName || content.title}
-                className="w-full max-h-[520px] rounded-lg object-contain"
-              />
-            </div>
-          </div>
+      <div className="px-4 pb-4 max-h-[calc(100vh-280px)] overflow-y-auto">
+        {viewMode === 'preview' ? (
+          <A4Preview content={{ ...content, content: editedContent }} />
         ) : (
           <div className="bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
-              <span className="text-xs text-muted-foreground">可编辑内容</span>
+              <span className="text-xs text-muted-foreground">编辑内容</span>
               <span className="text-xs text-muted-foreground">{editedContent.length} 字</span>
             </div>
             <textarea
