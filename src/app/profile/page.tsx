@@ -202,7 +202,8 @@ export default function ProfilePage() {
 
           {/* Modal Content */}
           <div
-            className="relative w-full max-w-[480px] bg-card rounded-t-2xl animate-slide-up max-h-[70vh] overflow-y-auto"
+            className="relative w-full max-w-[480px] rounded-t-2xl animate-slide-up max-h-[70vh] overflow-y-auto"
+            style={{ background: 'linear-gradient(135deg, #E2E2F9 0%, #F7FBFF 35%, #BCE2FD 100%)' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Printer Management */}

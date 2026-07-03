@@ -123,7 +123,30 @@ export default function HomePage() {
       </header>
 
       {/* Main Content */}
-      <main className="flex flex-col items-center pt-8 pb-6">
+      <main className="flex flex-col items-center pt-4 pb-6">
+        {/* Greeting with Printer Image */}
+        <section className="w-full mb-6">
+          <div className="flex items-start gap-4 px-4">
+            <div className="w-44 h-36 shrink-0 -mt-2">
+              <img
+                src="/printer.svg"
+                alt="AI智能打印机"
+                className="w-full h-full object-contain"
+                style={{
+                  filter: 'drop-shadow(0 4px 12px rgba(144,176,208,0.15))',
+                  maskImage: 'radial-gradient(ellipse 95% 95% at center, black 60%, transparent 100%)',
+                  WebkitMaskImage: 'radial-gradient(ellipse 95% 95% at center, black 60%, transparent 100%)',
+                }}
+              />
+            </div>
+            <div className="flex-1 pt-6">
+              <p className="text-2xl font-bold text-foreground" style={{ fontFamily: "'PingFang SC', 'Microsoft YaHei', sans-serif" }}>
+                {getGreeting()}，今天想打印什么？
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Voice Section */}
         <section className="w-full flex flex-col items-center mb-8">
           <VoiceButton onResult={handleVoiceResult} isProcessing={isProcessing} />
@@ -421,4 +444,13 @@ function generateMathWordContent(parsed: ParsedCommand): string {
     lines.push('');
   }
   return lines.join('\n');
+}
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 9) return '早上好';
+  if (hour >= 9 && hour < 12) return '上午好';
+  if (hour >= 12 && hour < 14) return '中午好';
+  if (hour >= 14 && hour < 18) return '下午好';
+  return '晚上好';
 }
