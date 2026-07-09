@@ -59,6 +59,7 @@ pnpm run build        # 生产构建
 pnpm run start        # 生产启动
 pnpm ts-check         # TypeScript 类型检查
 pnpm lint             # ESLint 检查
+pnpm exec next dev -H 0.0.0.0 -p 5000       #运行代码
 ```
 
 ## 设计规范
